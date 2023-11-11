@@ -19,8 +19,8 @@ def get_channel_mean(data):
     return meanR, meanG, meanB
 
 def get_channel_std(data):
-    stdR = np.std([m[0] for m in data])
-    stdG = np.std([m[1] for m in data])
-    stdB = np.std([m[2] for m in data])
+    stdR = np.mean([m[0] for m in data])
+    stdG = np.mean([m[1] for m in data])
+    stdB = np.mean([m[2] for m in data])
 
     return stdR, stdG, stdB

@@ -1,10 +1,33 @@
 import os
 from torch.utils.data import Dataset, DataLoader
 from PIL import Image
-
+from torchvision import transforms
 
 path = os.path.dirname(os.path.abspath(__file__))
 
+
+class ImageTransForm():
+    def __init__(self, resize, mean, std):
+        self.data_tranform = {
+            'train' : transforms.Compose([
+                transforms.RandomResizedCrop(resize, scale=(0.5, 1.0)),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+                transforms.Normalize(mean, std)
+            ]),
+            'val' : transforms.Compose(
+                [
+                    transforms.Resize(224),
+                    transforms.CenterCrop(resize),
+                    transforms.ToTensor(),
+                    transforms.Normalize(mean, std)
+                ]
+            )
+        }
+
+    def __call__(self, img, phase):
+        return self.data_tranform[phase](img)
+    
 
 class CustomDataset(Dataset):
     def __init__(self, dataframe, transform=None):
@@ -30,3 +53,4 @@ class CustomDataset(Dataset):
         comment = self.dataframe.iloc[idx]['comments'] if 'comments' in self.dataframe.columns else ""
 
         return img, mos, comment
+    
