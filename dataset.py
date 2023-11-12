@@ -30,12 +30,12 @@ class ImageTransForm():
     
 
 class CustomDataset(Dataset):
-    def __init__(self, dataframe, transform=None):
+    def __init__(self, dataframe, phase, transform=None ):
         dataframe[['path', 'extension']] = dataframe['img_path'].str.split(".", expand=True)[[1, 2]]
         dataframe = dataframe.drop('img_path', axis=1)
-
         self.dataframe = dataframe
         self.transform = transform
+        self.phase = phase
 
     def __len__(self):
         return len(self.dataframe)
@@ -46,7 +46,7 @@ class CustomDataset(Dataset):
         img = Image.open(img_path).convert('RGB')
 
         if self.transform:
-            img = self.transform(img)
+            img = self.transform(img, self.phase)
 
         # mos column 존재 여부에 따라 값을 설정
         mos = float(self.dataframe.iloc[idx]['mos']) if 'mos' in self.dataframe.columns else 0.0
