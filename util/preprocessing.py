@@ -1,14 +1,6 @@
 import numpy as np
-
-def get_mean(data):
-    meanRGB = []; stdRGB = []
-    for x, _ in data:
-        mean = np.mean(x.numpy(), axis=(1, 2))
-        meanRGB.append(mean)
-
-        std = np.std(x.numpy(), axis=(1, 2))
-        stdRGB.append(std)
-    return  meanRGB, stdRGB
+import torchvision
+from PIL import Image, ImageFile
 
 
 def get_channel_mean(data):
@@ -24,3 +16,25 @@ def get_channel_std(data):
     stdB = np.mean([m[2] for m in data])
 
     return stdR, stdG, stdB
+
+
+def get_mea_std(path):
+    meanRGB = []; stdRGB = []
+
+    for index, path in enumerate(path):
+        try :
+            tensor = torchvision.transforms.ToTensor()
+            img = Image.open(path).resize((224, 224)).convert("RGB")
+            img =tensor(img)
+
+            rgb = img.mean(dim=(1,2))
+            meanRGB.append(rgb)
+
+            std = img.std(dim=(1,2))
+            stdRGB.append(std)
+
+        except OSError as e:
+            print(e)
+            print(path)
+
+    return meanRGB, stdRGB
