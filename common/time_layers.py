@@ -1,7 +1,7 @@
 # coding: utf-8
 from common.layers import *
 from common.functions import sigmoid
-
+import numpy as np
 
 class RNN:
     def __init__(self, Wx, Wh, b):

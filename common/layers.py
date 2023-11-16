@@ -1,5 +1,3 @@
-# coding: utf-8
-from common.config import GPU
 from common.functions import softmax, cross_entropy_error
 
 

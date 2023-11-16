@@ -1,26 +1,30 @@
-# class Seq2seq(BaseModel):
-#     def __init__(self, vocab_size, wordvec_size, hidden_size):
-#         V, D, H = vocab_size, wordvec_size, hidden_size
-#         self.decoder = Decoder(V, D, H)
-#         self.softmax = TimeSoftmaxWithLoss()
+from train.models.decoder_seq import DecoderSeq
+from common.time_layers import *
+from common.base_model import *
 
-#         self.params = self.decoder.params
-#         self.grads = self.decoder.grads
+class Seq2seq(BaseModel):
+    def __init__(self, vocab_size, wordvec_size, hidden_size):
+        V, D, H = vocab_size, wordvec_size, hidden_size
+        self.decoder = DecoderSeq(V, D, H)
+        self.softmax = TimeSoftmaxWithLoss()
 
-#     def forward(self, imgfeature, ts):
-#         decoder_xs, decoder_ts = ts[:, :-1], ts[:, 1:]
+        self.params = self.decoder.params
+        self.grads = self.decoder.grads
 
-#         h = imgfeature
-#         score = self.decoder.forward(decoder_xs, h)
-#         loss = self.softmax.forward(score, decoder_ts)
-#         return loss
+    def forward(self, imgfeature, ts):
+        decoder_xs, decoder_ts = ts[:, :-1], ts[:, 1:]
 
-#     def backward(self, dout=1):
-#         dout = self.softmax.backward(dout)
-#         dout = self.decoder.backward(dout)
-#         return dout
+        h = imgfeature
+        score = self.decoder.forward(decoder_xs, h)
+        loss = self.softmax.forward(score, decoder_ts)
+        return loss
 
-#     def generate(self, imgfeature, start_id, sample_size):
-#         h = imgfeature
-#         sampled = self.decoder.generate(h, start_id, sample_size)
-#         return sampled
+    def backward(self, dout=1):
+        dout = self.softmax.backward(dout)
+        dout = self.decoder.backward(dout)
+        return dout
+
+    def generate(self, imgfeature, start_id, sample_size):
+        h = imgfeature
+        sampled = self.decoder.generate(h, start_id, sample_size)
+        return sampled
