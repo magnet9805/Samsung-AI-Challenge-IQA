@@ -12,7 +12,7 @@ class EncoderResnet(nn.Module):
         self.fc1 = nn.Linear(2048, 1024)
         self.fc_drop_out = nn.Dropout()
 
-        self.out = nn.Linear(1024, output)
+        self.out = nn.Linear(1024, output-1)
 
         self.mos = nn.Linear(1024, 1)
         self.relu = nn.ReLU(inplace=True)
