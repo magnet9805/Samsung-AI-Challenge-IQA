@@ -1,9 +1,9 @@
 # coding: utf-8
-from common.np import *
-
+import numpy as np
+import torch
 
 def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+    return torch.tensor(1 / (1 + np.exp(-x)))
 
 
 def relu(x):
@@ -19,7 +19,7 @@ def softmax(x):
         x = x - np.max(x)
         x = np.exp(x) / np.sum(np.exp(x))
 
-    return x
+    return torch.tensor(x)
 
 
 def cross_entropy_error(y, t):

@@ -2,7 +2,7 @@
 import sys
 sys.path.append('..')
 import os
-from common.np import *
+import numpy as np
 
 
 def preprocess(text):
@@ -175,12 +175,6 @@ def to_cpu(x):
         return x
     return np.asnumpy(x)
 
-
-def to_gpu(x):
-    import cupy
-    if type(x) == cupy.ndarray:
-        return x
-    return cupy.asarray(x)
 
 
 def clip_grads(grads, max_norm):

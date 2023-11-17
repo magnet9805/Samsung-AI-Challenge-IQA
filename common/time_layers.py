@@ -2,6 +2,7 @@
 from common.layers import *
 from common.functions import sigmoid
 import numpy as np
+import torch
 
 class RNN:
     def __init__(self, Wx, Wh, b):
@@ -126,7 +127,7 @@ class LSTM:
         h_next = o * np.tanh(c_next)
 
         self.cache = (x, h_prev, c_prev, i, f, g, o, c_next)
-        return h_next, c_next
+        return torch.tensor(h_next), torch.tensor(c_next)
 
     def backward(self, dh_next, dc_next):
         Wx, Wh, b = self.params
@@ -161,7 +162,7 @@ class LSTM:
         dx = np.dot(dA, Wx.T)
         dh_prev = np.dot(dA, Wh.T)
 
-        return dx, dh_prev, dc_prev
+        return torch.tensor(dx), torch.tensor(dh_prev), torch.tensor(dc_prev)
 
 
 class TimeLSTM:
@@ -194,7 +195,7 @@ class TimeLSTM:
 
             self.layers.append(layer)
 
-        return hs
+        return torch.tensor(hs)
 
     def backward(self, dhs):
         Wx, Wh, b = self.params
@@ -215,7 +216,7 @@ class TimeLSTM:
         for i, grad in enumerate(grads):
             self.grads[i][...] = grad
         self.dh = dh
-        return dxs
+        return torch.tensor(dxs)
 
     def set_state(self, h, c=None):
         self.h, self.c = h, c
@@ -243,7 +244,7 @@ class TimeEmbedding:
             out[:, t, :] = layer.forward(xs[:, t])
             self.layers.append(layer)
 
-        return out
+        return torch.tensor(out)
 
     def backward(self, dout):
         N, T, D = dout.shape
@@ -271,7 +272,7 @@ class TimeAffine:
         rx = x.reshape(N*T, -1)
         out = np.dot(rx, W) + b
         self.x = x
-        return out.reshape(N, T, -1)
+        return torch.tensor(out.reshape(N, T, -1))
 
     def backward(self, dout):
         x = self.x
@@ -289,7 +290,7 @@ class TimeAffine:
         self.grads[0][...] = dW
         self.grads[1][...] = db
 
-        return dx
+        return torch.tensor(dx)
 
 
 class TimeSoftmaxWithLoss:
@@ -318,7 +319,7 @@ class TimeSoftmaxWithLoss:
         loss /= mask.sum()
 
         self.cache = (ts, ys, mask, (N, T, V))
-        return loss
+        return torch.tensor(loss)
 
     def backward(self, dout=1):
         ts, ys, mask, (N, T, V) = self.cache
@@ -331,7 +332,7 @@ class TimeSoftmaxWithLoss:
 
         dx = dx.reshape((N, T, V))
 
-        return dx
+        return torch.tensor(dx)
 
 
 class TimeDropout:

@@ -1,4 +1,6 @@
 from common.functions import softmax, cross_entropy_error
+import numpy as np
+import torch
 
 
 class MatMul:
@@ -11,14 +13,14 @@ class MatMul:
         W, = self.params
         out = np.dot(x, W)
         self.x = x
-        return out
+        return torch.tensor(out)
 
     def backward(self, dout):
         W, = self.params
         dx = np.dot(dout, W.T)
         dW = np.dot(self.x.T, dout)
         self.grads[0][...] = dW
-        return dx
+        return torch.tensor(dx)
 
 
 class Affine:
@@ -31,7 +33,7 @@ class Affine:
         W, b = self.params
         out = np.dot(x, W) + b
         self.x = x
-        return out
+        return torch.tensor(out)
 
     def backward(self, dout):
         W, b = self.params
@@ -41,7 +43,7 @@ class Affine:
 
         self.grads[0][...] = dW
         self.grads[1][...] = db
-        return dx
+        return torch.tensor(dx)
 
 
 class Softmax:
@@ -51,13 +53,13 @@ class Softmax:
 
     def forward(self, x):
         self.out = softmax(x)
-        return self.out
+        return torch.tensor(self.out)
 
     def backward(self, dout):
         dx = self.out * dout
         sumdx = np.sum(dx, axis=1, keepdims=True)
         dx -= self.out * sumdx
-        return dx
+        return torch.tensor(dx)
 
 
 class SoftmaxWithLoss:
@@ -75,7 +77,7 @@ class SoftmaxWithLoss:
             self.t = self.t.argmax(axis=1)
 
         loss = cross_entropy_error(self.y, self.t)
-        return loss
+        return torch.tensor(loss)
 
     def backward(self, dout=1):
         batch_size = self.t.shape[0]
@@ -85,7 +87,7 @@ class SoftmaxWithLoss:
         dx *= dout
         dx = dx / batch_size
 
-        return dx
+        return torch.tensor(dx)
 
 
 class Sigmoid:
@@ -96,11 +98,11 @@ class Sigmoid:
     def forward(self, x):
         out = 1 / (1 + np.exp(-x))
         self.out = out
-        return out
+        return torch.tensor(out)
 
     def backward(self, dout):
         dx = dout * (1.0 - self.out) * self.out
-        return dx
+        return torch.tensor(dx)
 
 
 class SigmoidWithLoss:
@@ -116,13 +118,13 @@ class SigmoidWithLoss:
 
         self.loss = cross_entropy_error(np.c_[1 - self.y, self.y], self.t)
 
-        return self.loss
+        return torch.tensor(self.loss)
 
     def backward(self, dout=1):
         batch_size = self.t.shape[0]
 
         dx = (self.y - self.t) * dout / batch_size
-        return dx
+        return torch.tensor(dx)
 
 
 class Dropout:
@@ -137,12 +139,12 @@ class Dropout:
     def forward(self, x, train_flg=True):
         if train_flg:
             self.mask = np.random.rand(*x.shape) > self.dropout_ratio
-            return x * self.mask
+            return torch.tensor(x * self.mask)
         else:
-            return x * (1.0 - self.dropout_ratio)
+            return torch.tensor(x * (1.0 - self.dropout_ratio))
 
     def backward(self, dout):
-        return dout * self.mask
+        return torch.tensor(dout * self.mask)
 
 
 class Embedding:
@@ -155,10 +157,10 @@ class Embedding:
         W, = self.params
         self.idx = idx
         out = W[idx]
-        return out
+        return torch.tensor(out)
 
     def backward(self, dout):
         dW, = self.grads
         dW[...] = 0
         np.add.at(dW, self.idx, dout)
-        return None
+        return torch.tensor(None)

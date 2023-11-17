@@ -3,8 +3,7 @@ import sys
 sys.path.append('..')
 import os
 import pickle
-from common.np import *
-from common.utilize import to_gpu, to_cpu
+import numpy as np
 
 
 class BaseModel:
@@ -22,8 +21,6 @@ class BaseModel:
             file_name = self.__class__.__name__ + '.pkl'
 
         params = [p.astype(np.float16) for p in self.params]
-        if GPU:
-            params = [to_cpu(p) for p in params]
 
         with open(file_name, 'wb') as f:
             pickle.dump(params, f)
@@ -42,8 +39,6 @@ class BaseModel:
             params = pickle.load(f)
 
         params = [p.astype('f') for p in params]
-        if GPU:
-            params = [to_gpu(p) for p in params]
 
         for i, param in enumerate(self.params):
             param[...] = params[i]
