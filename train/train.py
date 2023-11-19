@@ -4,9 +4,9 @@ from tqdm import tqdm
 def train(model, train_dataloader, optimizer, criterion, device):
     epoch_loss = 0
     epoch_acc = 0
-
+    mask = 0
     model.train()
-    for img, mos, comment in train_dataloader:
+    for img, mos, comment in tqdm(train_dataloader):
         x = img.to(device)
         y = mos.to(device)
 
@@ -17,5 +17,9 @@ def train(model, train_dataloader, optimizer, criterion, device):
         optimizer.step()
 
         epoch_loss += loss.item()
-        break
+
+        mask +=1
+        if mask ==100:
+            break
+
     return epoch_loss / len(train_dataloader)

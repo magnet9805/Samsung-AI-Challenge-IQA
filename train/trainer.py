@@ -9,8 +9,8 @@ def trainer(model, dataloader_dict, num_epoch, optimizer, criterion, device):
     best_valid_loss = float('inf')
     for epoch in range(EPOCHS):
         start_time = time.monotonic()
-        train_loss, train_acc = train(model, dataloader_dict['train'], optimizer, criterion, device)
-        valid_loss, valid_acc = evaluate(model, dataloader_dict['test'], criterion, device)
+        train_loss = train(model, dataloader_dict['train'], optimizer, criterion, device)
+        valid_loss = evaluate(model, dataloader_dict['test'], criterion, device)
 
         if valid_loss < best_valid_loss:
             best_valid_loss = valid_loss
@@ -20,5 +20,5 @@ def trainer(model, dataloader_dict, num_epoch, optimizer, criterion, device):
         epoch_mins, epoch_secs = epoch_time(start_time, end_time)
 
         print(f'Epoch: {epoch + 1:02} | Epoch Time: {epoch_mins}m {epoch_secs}s')
-        print(f'\tTrain Loss: {train_loss:.3f} | Train Acc: {train_acc * 100:.2f}%')
-        print(f'\t Valid. Loss: {valid_loss:.3f} |  Valid. Acc: {valid_acc * 100:.2f}%')
+        print(f'\tTrain Loss: {train_loss:.3f}')
+        print(f'\t Valid. Loss: {valid_loss:.3f}')
