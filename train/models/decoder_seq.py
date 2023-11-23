@@ -1,22 +1,20 @@
 import numpy as np
 from common.time_layers import *
 import torch
+import torch.nn as nn
 
 class DecoderSeq:
-    def __init__(self, vocab_size, wordvec_size, hidden_size):
-        V, D, H = vocab_size, wordvec_size, hidden_size
-        rn = np.random.randn
+    def __init__(self, output_dim, embed_size, hidden_size, num_layers ):
+        , H = vocab_size, hidden_size
 
-        embed_W = torch.tensor((rn(V, D) / 100).astype('f'))
-        lstm_Wx = torch.tensor((rn(D, 4 * H) / np.sqrt(D)).astype('f'))
-        lstm_Wh = torch.tensor((rn(H, 4 * H) / np.sqrt(H)).astype('f'))
-        lstm_b = torch.tensor(np.zeros(4 * H).astype('f'))
-        affine_W = torch.tensor((rn(H, V) / np.sqrt(H)).astype('f'))
-        affine_b = torch.tensor(np.zeros(V).astype('f'))
+        self.embed = nn.Embedding(V, H)
 
-        self.embed = TimeEmbedding(embed_W)
-        self.lstm = TimeLSTM(lstm_Wx, lstm_Wh, lstm_b, stateful=True)
-        self.affine = TimeAffine(affine_W, affine_b)
+        # self.lstm = TimeLSTM(lstm_Wx, lstm_Wh, lstm_b, stateful=True)
+        self.lstm = nn.LSTM(H, H, 1)
+
+        # self.affine = TimeAffine(affine_W, affine_b)
+        self.affine = nn.Linear(H, D)
+        
 
         self.params, self.grads = [], []
         for layer in (self.embed, self.lstm, self.affine):
@@ -30,26 +28,3 @@ class DecoderSeq:
         out = self.lstm.forward(out)
         score = self.affine.forward(out)
         return score
-
-    def backward(self, dscore):
-        dout = self.affine.backward(dscore)
-        dout = self.lstm.backward(dout)
-        dout = self.embed.backward(dout)
-        dh = self.lstm.dh
-        return dh
-
-    def generate(self, h, start_id, sample_size):
-        sampled = []
-        sample_id = start_id
-        self.lstm.set_state(h)
-
-        for _ in range(sample_size):
-            x = np.array(sample_id).reshape((1, 1))
-            out = self.embed.forward(x)
-            out = self.lstm.forward(out)
-            score = self.affine.forward(out)
-
-            sample_id = np.argmax(score.flatten())
-            sampled.append(int(sample_id))
-
-        return torch.tensor(sampled)
