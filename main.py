@@ -16,6 +16,8 @@ import warnings
 import dataset as d
 from train.models.encoder_resnet import EncoderResnet
 from torch import optim
+import pandas as pd
+
 from train.trainer import trainer
 
 
@@ -38,8 +40,8 @@ def main():
         'LR':1e-5, #Your Learning Rate,
         'BATCH_SIZE': 16, #Your Batch Size,
         'SEED':41,
-        'num_worker' : multiprocessing.cpu_count()
-
+        'num_worker' : multiprocessing.cpu_count(),
+        'EARLY_STOP' : 10
     }
 
     seed_everything(CFG['SEED']) # Seed 고정
@@ -80,7 +82,7 @@ def main():
     criterion.to(device)
     encoder.to(device)
 
-    train_history, valid_history = trainer(encoder, dataloader_dict=dataloader_dict, criterion=criterion, num_epoch=1, optimizer=optimizer, device=device, early_stop=5)
+    train_history, valid_history = trainer(encoder, dataloader_dict=dataloader_dict, criterion=criterion, num_epoch=CFG['EPOCHS'], optimizer=optimizer, device=device, early_stop=CFG['EARLY_STOP'])
     return train_history, valid_history
 
 
@@ -208,4 +210,8 @@ def main():
 
 
 if __name__ == "__main__":
-    print(main())
+    train_history, valid_history = main()
+
+    pd = pd.DataFrame(columns=['train_loss', 'test_loss'],
+                      data=[(train, valid) for train, valid in zip(train_history, valid_history)])
+    pd.to_csv('loss.csv')
