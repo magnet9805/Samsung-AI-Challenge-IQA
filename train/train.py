@@ -18,8 +18,4 @@ def train(model, train_dataloader, optimizer, criterion, device):
 
         epoch_loss += loss.item()
 
-        mask +=1
-        if mask ==100:
-            break
-
     return epoch_loss / len(train_dataloader)
