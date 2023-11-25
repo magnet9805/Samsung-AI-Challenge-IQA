@@ -63,7 +63,7 @@ def main():
     valid_dataset = d.CustomDataset(test_data, 'valid', transform=valid_transform)
 
     train_loader = DataLoader(train_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=True)
-    test_loader = DataLoader(valid_data, batch_size=CFG['BATCH_SIZE'], shuffle=True)
+    test_loader = DataLoader(valid_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=True)
 
     dataloader_dict = {'train': train_loader, 'valid': test_loader}
 
