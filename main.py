@@ -38,7 +38,7 @@ def main():
         'IMG_SIZE':224,
         'EPOCHS':1000, #Your Epochs,
         'LR':1e-5, #Your Learning Rate,
-        'BATCH_SIZE': 16, #Your Batch Size,
+        'BATCH_SIZE': 64, #Your Batch Size,
         'SEED':41,
         'num_worker' : multiprocessing.cpu_count(),
         'EARLY_STOP' : 10
