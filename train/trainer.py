@@ -7,11 +7,12 @@ def trainer(model, dataloader_dict, num_epoch, optimizer, criterion, early_stop,
     EPOCHS = num_epoch
     train_history, valid_history = [], []
 
+    lowest_epoch = 0
     best_valid_loss = float('inf')
     for epoch in range(EPOCHS):
         start_time = time.monotonic()
         train_loss = train(model, dataloader_dict['train'], optimizer, criterion, device)
-        valid_loss = evaluate(model, dataloader_dict['test'], criterion, device)
+        valid_loss = evaluate(model, dataloader_dict['valid'], criterion, device)
 
         if valid_loss < best_valid_loss:
             lowest_epoch = epoch

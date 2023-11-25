@@ -16,5 +16,9 @@ def evaluate(model, test_dataloader, criterion, device):
             out, mos_pred = model(x)
             loss = criterion(mos_pred.to(torch.float64), y.to(torch.float64))
             epoch_loss += loss.item()
+            mask +=1
+
+            if mask == 100:
+                break
 
     return epoch_loss / len(test_dataloader)
