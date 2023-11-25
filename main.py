@@ -38,7 +38,7 @@ def main():
         'IMG_SIZE':224,
         'EPOCHS':1000, #Your Epochs,
         'LR':1e-5, #Your Learning Rate,
-        'BATCH_SIZE': 64, #Your Batch Size,
+        'BATCH_SIZE': 32, #Your Batch Size,
         'SEED':41,
         'num_worker' : multiprocessing.cpu_count(),
         'EARLY_STOP' : 10
@@ -62,8 +62,8 @@ def main():
     train_dataset = d.CustomDataset(train_data, 'train', transform=train_transform)
     valid_dataset = d.CustomDataset(test_data, 'valid', transform=valid_transform)
 
-    train_loader = DataLoader(train_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=True)
-    test_loader = DataLoader(valid_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=True,num_workers=CFG['num_worker'], pin_memory=True)
+    test_loader = DataLoader(valid_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=True, num_workers=CFG['num_worker'], pin_memory=True)
 
     dataloader_dict = {'train': train_loader, 'valid': test_loader}
 
