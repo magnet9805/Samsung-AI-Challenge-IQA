@@ -44,27 +44,25 @@ def main():
 
     seed_everything(CFG['SEED']) # Seed 고정
 
-    train_mean = (0.42008194, 0.3838274, 0.34902292)
-    train_Std = (0.23926373, 0.22593886, 0.22363442)
+    train_mean = (0.4194325, 0.3830166, 0.3490198)
+    train_Std = (0.23905228, 0.2253936, 0.22334467)
 
-    test_mean = (0.4216005, 0.38125762, 0.34539804)
-    test_Std = (0.23252015, 0.21890979, 0.21627444)
-
-
+    valid_mean = (0.4170096, 0.38036022, 0.34702352)
+    valid_Std = (0.23896241, 0.22566794, 0.22329141)
 
 
     train_data = pd.read_csv('./data/open/train.csv')
     test_data = pd.read_csv('./data/open/test.csv')
     train_transform = d.ImageTransForm(CFG['IMG_SIZE'], train_mean, train_Std)
-    test_transform = d.ImageTransForm(CFG['IMG_SIZE'], test_mean, test_Std)
+    test_transform = d.ImageTransForm(CFG['IMG_SIZE'], valid_mean, valid_Std)
 
     train_dataset = d.CustomDataset(train_data, 'train', transform=train_transform)
-    test_dataset = d.CustomDataset(test_data, 'test', transform=test_transform)
+    test_dataset = d.CustomDataset(test_data, 'valid', transform=test_transform)
 
     train_loader = DataLoader(train_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=True, num_workers=CFG['num_worker'], pin_memory=True)
     test_loader = DataLoader(test_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=True, num_workers=CFG['num_worker'], pin_memory=True)
 
-    dataloader_dict = {'train' : train_loader, 'test' : test_loader}
+    dataloader_dict = {'train' : train_loader, 'valid' : test_loader}
 
 
     encoder = EncoderResnet(512)
