@@ -52,20 +52,20 @@ def main():
     valid_mean = (0.4170096, 0.38036022, 0.34702352)
     valid_Std = (0.23896241, 0.22566794, 0.22329141)
 
+    train_data = pd.read_csv('./data/open/train_data.csv')
+    valid_data = pd.read_csv('./data/open/valid_data.csv')
+    test_data = pd.read_csv('./data/open/test_data.csv')
 
-    train_data = pd.read_csv('./data/open/train.csv')
-    test_data = pd.read_csv('./data/open/test.csv')
     train_transform = d.ImageTransForm(CFG['IMG_SIZE'], train_mean, train_Std)
-    test_transform = d.ImageTransForm(CFG['IMG_SIZE'], valid_mean, valid_Std)
+    valid_transform = d.ImageTransForm(CFG['IMG_SIZE'], valid_mean, valid_Std)
 
     train_dataset = d.CustomDataset(train_data, 'train', transform=train_transform)
-    test_dataset = d.CustomDataset(test_data, 'valid', transform=test_transform)
+    valid_dataset = d.CustomDataset(test_data, 'valid', transform=valid_transform)
 
-    train_loader = DataLoader(train_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=True, num_workers=CFG['num_worker'], pin_memory=True)
-    test_loader = DataLoader(test_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=True, num_workers=CFG['num_worker'], pin_memory=True)
+    train_loader = DataLoader(train_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=True)
+    test_loader = DataLoader(valid_data, batch_size=CFG['BATCH_SIZE'], shuffle=True)
 
-    dataloader_dict = {'train' : train_loader, 'valid' : test_loader}
-
+    dataloader_dict = {'train': train_loader, 'valid': test_loader}
 
     encoder = EncoderResnet(512)
     #torch.cuda.get_device_name(0)
