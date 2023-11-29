@@ -3,9 +3,14 @@ from train.train import train
 from train.evaludate import evaluate
 import torch
 from util.times import epoch_time
+from torch.utils.tensorboard import SummaryWriter
+
 def trainer(model, dataloader_dict, num_epoch, optimizer, criterion, early_stop,device):
     EPOCHS = num_epoch
     train_history, valid_history = [], []
+    from torch.utils.tensorboard import SummaryWriter
+    writer = SummaryWriter('./logs/')
+
 
     lowest_epoch = 0
     best_valid_loss = float('inf')
@@ -24,6 +29,10 @@ def trainer(model, dataloader_dict, num_epoch, optimizer, criterion, early_stop,
         train_history.append(train_loss)
         valid_history.append(valid_loss)
 
+        writer.add_scalar("Loss/train", train_loss, epoch)
+        writer.add_scalar("Loss/valid", valid_loss, epoch)
+
+
 
         end_time = time.monotonic()
         epoch_mins, epoch_secs = epoch_time(start_time, end_time)
@@ -31,5 +40,6 @@ def trainer(model, dataloader_dict, num_epoch, optimizer, criterion, early_stop,
         print(f'Epoch: {epoch + 1:02} | Epoch Time: {epoch_mins}m {epoch_secs}s')
         print(f'\tTrain Loss: {train_loss:.3f}')
         print(f'\t Valid. Loss: {valid_loss:.3f}')
-    
+    writer.close()
+
     return train_history, valid_history
