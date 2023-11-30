@@ -38,7 +38,7 @@ import dataset as d
 
 # basemodel.py 의 BaseModel 클래스 사용
 
-import basemodel as base
+import train.basemodel as base
 
 # 데이터 로드
 train_data = pd.read_csv('./data/open/train.csv')

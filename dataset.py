@@ -15,9 +15,9 @@ class ImageTransForm():
                 transforms.ToTensor(),
                 transforms.Normalize(mean, std)
             ]),
-            'val' : transforms.Compose(
+            'valid' : transforms.Compose(
                 [
-                    transforms.Resize(224),
+                    transforms.Resize(224),                            
                     transforms.CenterCrop(resize),
                     transforms.ToTensor(),
                     transforms.Normalize(mean, std)
