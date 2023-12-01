@@ -42,4 +42,4 @@ def trainer(model, dataloader_dict, num_epoch, optimizer, criterion_dict, early_
         print(f'\t Valid. Loss: {valid_loss:.3f}')
     writer.close()
 
-    return train_history, valid_historya
+    return train_history, valid_history
