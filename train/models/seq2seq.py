@@ -16,9 +16,9 @@ class Seq2seq(nn.Module):
         batch_size = comments.shape[0]
         seq_len = comments.shape[1]
         vocab_size = self.decoder.output_dim
-        
-        input = comments_tensor[:, 0].to(self.device)
-        target = comments_tensor[:, 1:].to(self.device)
+
+        input = comments[:, 0].to(self.device)
+        target = comments[:, 1:].to(self.device)
 
         outputs = torch.zeros(batch_size, seq_len - 1, vocab_size).to(self.device)
 
@@ -41,7 +41,3 @@ class Seq2seq(nn.Module):
 
         # outputs = outputs.argmax(dim=-1)
         return outputs, mos  # (seq_len, batch_size, output_size)
-
-
-
-
