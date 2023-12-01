@@ -13,17 +13,12 @@ class Seq2seq(nn.Module):
         self.device = device
 
     def forward(self, imgs, comments, teacher_forcing_ratio=0.5):
-        imgs = imgs.float().to(self.device)
-        comments_tensor = torch.zeros((len(comments), len(max(comments, key=len)))).long().to(self.device)
-        for i, comment in enumerate(comments):
-            tokenized = ['<SOS>'] + comment.split() + ['<EOS>']
-            comments_tensor[i, :len(tokenized)] = torch.tensor([self.word2idx[word] for word in tokenized])
-
-        batch_size = comments_tensor.shape[0]
-        seq_len = comments_tensor.shape[1]
+        batch_size = comments.shape[0]
+        seq_len = comments.shape[1]
         vocab_size = self.decoder.output_dim
-        input = comments_tensor[:, 0].to(self.device)
-        target = comments_tensor[:, 1:].to(self.device)
+        
+        input = comments[:, 0].to(self.device)
+        target = comments[:, 1:].to(self.device)
 
         outputs = torch.zeros(batch_size, seq_len - 1, vocab_size).to(self.device)
 

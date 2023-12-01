@@ -1,5 +1,5 @@
 import dataset as d
-from util.preprocessing import *
+from util.preprocessing import  *
 import multiprocessing
 import torch
 import torch.nn as nn
@@ -15,10 +15,13 @@ import random
 import warnings
 import dataset as d
 from train.models.encoder_resnet import EncoderResnet
+from train.models.decoder_seq import DecoderSeq
+from train.models.seq2seq import Seq2seq
 from torch import optim
 import pandas as pd
 
 from train.trainer import trainer
+
 
 
 def seed_everything(seed):
@@ -32,17 +35,18 @@ def seed_everything(seed):
 
 
 def main():
+
     CFG = {
-        'IMG_SIZE': 224,
-        'EPOCHS': 1000,  # Your Epochs,
-        'LR': 1e-5,  # Your Learning Rate,
-        'BATCH_SIZE': 32,  # Your Batch Size,
-        'SEED': 41,
-        'num_worker': multiprocessing.cpu_count(),
-        'EARLY_STOP': 10
+        'IMG_SIZE':224,
+        'EPOCHS':1000, #Your Epochs,
+        'LR':1e-5, #Your Learning Rate,
+        'BATCH_SIZE': 32, #Your Batch Size,
+        'SEED':41,
+        'num_worker' : multiprocessing.cpu_count(),
+        'EARLY_STOP' : 10
     }
 
-    seed_everything(CFG['SEED'])  # Seed 고정
+    seed_everything(CFG['SEED']) # Seed 고정
 
     train_mean = (0.4194325, 0.3830166, 0.3490198)
     train_Std = (0.23905228, 0.2253936, 0.22334467)
@@ -61,44 +65,45 @@ def main():
     train_dataset = d.CustomDataset(train_data, 'train', transform=train_transform)
     valid_dataset = d.CustomDataset(valid_data, 'valid', transform=valid_transform)
 
-    train_loader = DataLoader(train_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=True, num_workers=CFG['num_worker'],
-                              pin_memory=True)
-    valid_loader = DataLoader(valid_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=True, num_workers=CFG['num_worker'],
-                              pin_memory=True)
 
+
+    train_loader = DataLoader(train_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=True,num_workers=CFG['num_worker'], pin_memory=True)
+    valid_loader = DataLoader(valid_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=True, num_workers=CFG['num_worker'], pin_memory=True)
+    
     all_comments = ' '.join(all_data['comments']).split()
     vocab = set(all_comments)
     vocab = ['<PAD>', '<SOS>', '<EOS>'] + list(vocab)
     word2idx = {word: idx for idx, word in enumerate(vocab)}
     idx2word = {idx: word for word, idx in word2idx.items()}
-
+    
     hidden_dim = 512
     embed_dim = 256
     output_dim = len(vocab)
     num_layers = 1
-    encoder = EncoderResnet(hidden_dim)
-    decoder = DecoderSeq(output_dim, embed_dim, hidden_dim, num_layers)
-    model = Seq2seq(encoder, decoder, word2idx, device)
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else "cpu")
+    encoder = EncoderResnet(hidden_dim)
+    decoder = DecoderSeq(output_dim, embed_dim, hidden_dim, num_layers)
+    model = Seq2seq(encoder, decoder, device)
+    
 
     criterion_mos = nn.MSELoss()
     criterion_caption = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-5)
-
+    
     criterion_mos.to(device)
     criterion_caption.to(device)
     encoder.to(device)
     decoder.to(device)
     model.to(device)
-
+    
     dataloader_dict = {'train': train_loader, 'valid': valid_loader}
-    criterion_dict = {'mos': criterion_mos, 'caption': criterion_caption}
+    criterion_dict = {'mos' : criterion_mos, 'caption': criterion_caption}
 
-    train_history, valid_history = trainer(model, dataloader_dict=dataloader_dict, criterion=criterion_dict,
-                                           num_epoch=CFG['EPOCHS'], optimizer=optimizer, device=device,
-                                           early_stop=CFG['EARLY_STOP'])
+    train_history, valid_history = trainer(model, dataloader_dict=dataloader_dict, criterion=criterion_dict, num_epoch=CFG['EPOCHS'], optimizer=optimizer, device=device, early_stop=CFG['EARLY_STOP'], word2idx=word2idx)
     return train_history, valid_history
+
+
 
 
 if __name__ == "__main__":
