@@ -5,7 +5,10 @@ import torch
 from util.times import epoch_time
 from torch.utils.tensorboard import SummaryWriter
 
-def trainer(model, dataloader_dict, num_epoch, optimizer, criterion_dict, early_stop,device):
+
+def trainer(model, dataloader_dict, num_epoch, optimizer, criterion_dict, early_stop,device,word2idx):
+
+
     EPOCHS = num_epoch
     train_history, valid_history = [], []
     from torch.utils.tensorboard import SummaryWriter
@@ -16,8 +19,12 @@ def trainer(model, dataloader_dict, num_epoch, optimizer, criterion_dict, early_
     best_valid_loss = float('inf')
     for epoch in range(EPOCHS):
         start_time = time.monotonic()
-        train_loss = train(model, dataloader_dict['train'], optimizer, criterion_dict, device)
-        valid_loss = evaluate(model, dataloader_dict['valid'], criterion_dict, device)
+        train_loss = train(model, dataloader_dict['train'], optimizer, criterion_dict, device, word2idx)
+        valid_loss = evaluate(model, dataloader_dict['valid'], criterion_dict, device, word2idx)
+
+
+
+
 
         if valid_loss < best_valid_loss:
             lowest_epoch = epoch
