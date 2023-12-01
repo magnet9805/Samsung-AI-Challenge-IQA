@@ -5,7 +5,7 @@ import torch
 from util.times import epoch_time
 from torch.utils.tensorboard import SummaryWriter
 
-def trainer(model, dataloader_dict, num_epoch, optimizer, criterion, early_stop,device):
+def trainer(model, dataloader_dict, num_epoch, optimizer, criterion_dict, early_stop,device):
     EPOCHS = num_epoch
     train_history, valid_history = [], []
     from torch.utils.tensorboard import SummaryWriter
@@ -16,13 +16,13 @@ def trainer(model, dataloader_dict, num_epoch, optimizer, criterion, early_stop,
     best_valid_loss = float('inf')
     for epoch in range(EPOCHS):
         start_time = time.monotonic()
-        train_loss = train(model, dataloader_dict['train'], optimizer, criterion, device)
-        valid_loss = evaluate(model, dataloader_dict['valid'], criterion, device)
+        train_loss = train(model, dataloader_dict['train'], optimizer, criterion_dict, device)
+        valid_loss = evaluate(model, dataloader_dict['valid'], criterion_dict, device)
 
         if valid_loss < best_valid_loss:
             lowest_epoch = epoch
             best_valid_loss = valid_loss
-            torch.save(model.state_dict(), 'encoder-model.pt')
+            torch.save(model.state_dict(), 'seq2seq-model.pt')
         if early_stop > 0 and lowest_epoch + early_stop < epoch + 1:
             print("There is no improvement during last %d epochs." % early_stop)
             break
