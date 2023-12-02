@@ -78,9 +78,6 @@ def main():
     embed_dim = 256
     output_dim = len(vocab)
     num_layers = 1
-    encoder = EncoderResnet(hidden_dim)
-    decoder = DecoderSeq(output_dim, embed_dim, hidden_dim, num_layers)
-    model = Seq2seq(encoder, decoder, word2idx, device)
 
 
 
@@ -103,7 +100,6 @@ def main():
     decoder = DecoderSeq(output_dim, embed_dim, hidden_dim, num_layers)
     model = Seq2seq(encoder, decoder, device)
 
-
     criterion_mos = nn.MSELoss()
     criterion_caption = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-5)
@@ -119,6 +115,7 @@ def main():
     
     dataloader_dict = {'train': train_loader, 'valid': valid_loader}
     criterion_dict = {'mos' : criterion_mos, 'caption': criterion_caption}
+
 
     train_history, valid_history = trainer(model, dataloader_dict, CFG['EPOCHS'], optimizer, criterion_dict, CFG['EARLY_STOP'],device,word2idx)
     return train_history, valid_history

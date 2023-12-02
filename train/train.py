@@ -16,6 +16,7 @@ def train(model, train_dataloader, optimizer, criterion_dict, device, word2idx):
             comments_tensor[i, :len(tokenized)] = torch.tensor([word2idx[word] for word in tokenized])
         
         predicted_caption, predicted_mos = model(img, comments_tensor)
+
         caption_target = comments_tensor[:, 1:]
 
         loss_mos = criterion_dict['mos'](predicted_mos.to(torch.float64), mos.to(torch.float64))

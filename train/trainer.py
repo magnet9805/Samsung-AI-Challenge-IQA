@@ -5,7 +5,6 @@ import torch
 from util.times import epoch_time
 from torch.utils.tensorboard import SummaryWriter
 
-
 def trainer(model, dataloader_dict, num_epoch, optimizer, criterion_dict, early_stop,device,word2idx):
 
     EPOCHS = num_epoch

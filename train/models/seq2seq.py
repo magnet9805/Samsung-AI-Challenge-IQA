@@ -40,7 +40,3 @@ class Seq2seq(nn.Module):
 
         # outputs = outputs.argmax(dim=-1)
         return outputs, mos  # (seq_len, batch_size, output_size)
-
-
-
-
