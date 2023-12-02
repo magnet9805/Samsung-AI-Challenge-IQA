@@ -120,17 +120,8 @@ def main():
     dataloader_dict = {'train': train_loader, 'valid': valid_loader}
     criterion_dict = {'mos' : criterion_mos, 'caption': criterion_caption}
 
-    train_history, valid_history = trainer(model, dataloader_dict=dataloader_dict, criterion=criterion_dict, num_epoch=CFG['EPOCHS'], optimizer=optimizer, device=device, early_stop=CFG['EARLY_STOP'], word2idx=word2idx)
+    train_history, valid_history = trainer(model, dataloader_dict, CFG['EPOCHS'], optimizer, criterion_dict, CFG['EARLY_STOP'],device,word2idx)
     return train_history, valid_history
-
-
-
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
