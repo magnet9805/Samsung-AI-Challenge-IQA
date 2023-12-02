@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch
 import random
-
+# 깃허브 테스트 12021325
 
 class Seq2seq(nn.Module):
     def __init__(self, encoder, decoder, device):
