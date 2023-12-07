@@ -16,22 +16,22 @@ class DecoderSeq(nn.Module):
         self.affine = nn.Linear(self.hidden_dim, output_dim)
         self.softmax = nn.LogSoftmax(dim=-1)
 
-    def forward(self, input, hidden): # input : comments tensor / hidden : 이미지 feature
+    def forward(self, input, hidden): # input : comments tensor
 
         # input = [batch_size]
 
         #input = [1, batch_size]
-        input = input.view(1,-1)
+        input = input.reshape(1,-1)
 
         # out = [1, batch_size, embed_dim]
         out = self.embed(input)
 
-        # out = [batch_size, seq_len, hidden_dim] => 8, 1, 256
+        # out = [batch_size, num_layers, hidden_dim] => 8, 1, 256
         out = out.reshape(-1, self.num_layers, self.embed_dim)
 
         # hidden = [num_layers, batch_size, hidden_dim] => 1, 8, 512
         out, hidden = self.gru(out, hidden)
 
-        # # prediction = [batch_size, seq_len, output_dim]
+        # # prediction = [batch_size, num_layers, output_dim]
         prediction = self.softmax(self.affine(out))
         return prediction, hidden

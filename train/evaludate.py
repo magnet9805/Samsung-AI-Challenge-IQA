@@ -1,7 +1,6 @@
 import torch
 def evaluate(model, test_dataloader, criterion_dict, device, word2idx):
     epoch_loss = 0
-    mask = 0
 
     model.eval()
     with torch.no_grad():
@@ -22,9 +21,5 @@ def evaluate(model, test_dataloader, criterion_dict, device, word2idx):
             loss_caption = criterion_dict['caption'](predicted_caption.view(-1, predicted_caption.size(-1)), caption_target.reshape(-1))
             loss = loss_mos + loss_caption
             epoch_loss += loss.item()
-
-            mask += 1
-            if mask == 100:
-                break
 
     return epoch_loss / len(test_dataloader)
